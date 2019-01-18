@@ -2,9 +2,7 @@ from hopalong import *
 from screen_utils import *
 from lines import *
 from spiro import *
-from sine import *
-from julia import *
-from mandel import *
+#from sine import *
 from mandelbrot import *
 
 
@@ -15,7 +13,6 @@ def main():
     running = True
     while running:
         running = mandelbrot(screen)
-        # running = julia(screen)
         running = spiro(screen)
         running = lines(screen)
         running = hopalong(screen)
