@@ -56,12 +56,14 @@ def mandelbrot(screen):
     running = config.running
     verbose = config.verbose
     width, height = screen.sizeX, screen.sizeY
-    julia = False
     '''The minimum and maximum real and imaginary boundries to draw the entire mandelbrot set'''
-    min_re = -2.5
-    max_re = 1.0
-    min_im = -1.2
-    max_im = min_im + (max_re - min_re) * height / width
+    # min_re = -2.5
+    # max_re = 1.0
+    # min_im = -1.2
+    # if config.full_screen:
+    #     max_im = min_im + (max_re - min_re) * height / width
+    # else:
+    # max_im = min_im + (max_re - min_re) * height / width
     # re_factor = (max_re - min_re) / (width - 1)
     # im_factor = (max_im - min_im) / (height - 1)
     # mouse_real = -1.0
@@ -73,7 +75,7 @@ def mandelbrot(screen):
     iter_step = 20
     '''Actually, zoom is the field of view.  A smaller number means a smaller subsection of the mandelbrot.
         In other words, the smaller this number is, the more you are zoomed in.'''
-    zoom = 0.01
+    # zoom = 0.01
     zoom = 1
     '''Amount to move away from the bottom left corner.  An attempt to avoid zooming in on sections of the 
         mandelbrot that are all black except for a small speck in the bottom left corner.  For zoom < 0.001
@@ -90,7 +92,10 @@ def mandelbrot(screen):
 
     for step in range(mandelbrot_lifespan):
         '''A random choice for various color schemes used by the program'''
-        color_scheme = random.randint(0, 3)
+        if config.testing:
+            color_scheme = 0
+        else:
+            color_scheme = random.randint(0, 3)
         '''One of the choices just does a modulo of the r/g/b components'''
         red = random.randint(50, 255)
         green = random.randint(50, 255)
@@ -100,10 +105,15 @@ def mandelbrot(screen):
         palette, palette_name = screen_utils.get_palette("search")
         '''If this is the first pass, just draw a full mandelbrot set'''
         if step == 0:
-            min_re = -2.5
-            max_re = 1.0
+            '''This reset of values is only needed if we are accepting mouse clicks.'''
+            p1_real = min_re = -2.5
+            p1_imaginary = max_re = 1.0
             min_im = -1.2
-            max_im = min_im + (max_re - min_re) * height / width
+            '''Wide screen monitors might cut off part of the mandelbrot to keep the proper aspect ratio'''
+            if config.full_screen:
+                max_im = 1.2
+            else:
+                max_im = min_im + (max_re - min_re) * height / width
             re_factor = (max_re - min_re) / (width - 1)
             im_factor = (max_im - min_im) / (height - 1)
             '''If the mouse has been clicked in the mandelbrot, convert the x value on the screen to
@@ -127,7 +137,10 @@ def mandelbrot(screen):
             min_re = -2.5
             max_re = 1.0
             min_im = -1.2
-            max_im = min_im + (max_re - min_re) * height / width
+            if config.full_screen:
+                max_im = 1.2
+            else:
+                max_im = min_im + (max_re - min_re) * height / width
             re_factor = (max_re - min_re) / (width - 1)
             im_factor = (max_im - min_im) / (height - 1)
             '''Pick a random interesting point, set the surrounding parameters.'''
@@ -169,31 +182,34 @@ def mandelbrot(screen):
                     #     if verbose:
                     #         print("mouse: {}, {} / real: {}, imaginary {}".format(mouse_x, mouse_y,
                     #         mouse_real, mouse_imaginary))
-                # if julia == True:
-                #     i = julia_formula(x, y, width - 1, height - 1, p1_real, p1_imaginary, max_iter)
-                #     screen.point(x, y, (i << 21) + (i << 10) + i * 8)
-                # else:
-                is_inside, n = mandelbrot_formula(x, min_re, c_im, max_iter, re_factor)
-                #  is_inside, n = mandelbrot_formula(c_re, c_im, max_iter)
-                if is_inside:
-                    '''Black for points inside the mandelbrot set'''
-                    screen.point(x, y, [0, 0, 0])
+                if julia == True:
+                    i = julia_formula(x, y, width - 1, height - 1, p1_real, p1_imaginary, max_iter)
+                    screen.point(x, y, (i << 21) + (i << 10) + i * 8)
                 else:
-                    if color_scheme == 0:
-                        n = n % 1000
-                        palette_name = "bit shift"
-                        current_color = (n << 21) + (n << 10) + n * 8
-                    elif color_scheme == 1:
-                        palette_name = "modulo"
-                        current_color = [red % (n + 1), green % (n + 1), blue % (n + 1)]
+                    # n = julia_formula(x, y, width - 1, height - 1, p1_real, p1_imaginary, max_iter)
+                    is_inside, n = mandelbrot_formula(x, min_re, c_im, max_iter, re_factor)
+                    #  is_inside, n = mandelbrot_formula(c_re, c_im, max_iter)
+                    # is_inside = False
+                    if is_inside:
+                        '''Black for points inside the mandelbrot set'''
+                        screen.point(x, y, [0, 0, 0])
                     else:
-                        current_color = pygame.color.Color(palette[n % len(palette)])
-                    screen.point(x, y, current_color)
-                    '''If this is the first pass (drawing the entire mandelbrot), create a list
-                        of interesting points for zooming in on'''
-                    if step == 0:
-                        if n >= max_iter - 7:
-                            interesting_points.append((x, y))
+                        if color_scheme == 0 or step == 0:
+                            n = n % 1000
+                            palette_name = "bit shift"
+                            current_color = (n << 21) + (n << 10) + n * 8
+                        elif color_scheme == 1:
+                            palette_name = "modulo"
+                            current_color = [red % (n + 1), green % (n + 1), blue % (n + 1)]
+                            # current_color = [(n + 1) % 255, (n + 1) % 255, (n + 1) % 255]
+                        else:
+                            current_color = pygame.color.Color(palette[n % len(palette)])
+                        screen.point(x, y, current_color)
+                        '''If this is the first pass (drawing the entire mandelbrot), create a list
+                            of interesting points for zooming in on'''
+                        if step == 0:
+                            if n >= max_iter - 7:
+                                interesting_points.append((x, y))
         pygame.display.flip()
         end_time = time.time()
         if verbose:
@@ -202,41 +218,9 @@ def mandelbrot(screen):
                                         palette_name, max_iter, round(min_re, 2), round(max_re, 2),
                                         round(min_im, 2), round(max_im, 2), round(end_time - start_time, 2)))
 
-        '''Now do the julia.  If it's the first pass on the complete mandelbrot, choose a random
-            interesting point.  If not, keep the interesting point we just zoomed in on, and display
-            it's corresponding julia set.'''
-        if step == 0:
-            # min_re = -2.5
-            # max_re = 1.0
-            # min_im = -1.2
-            # max_im = min_im + (max_re - min_re) * height / width
-            # re_factor = (max_re - min_re) / (width - 1)
-            # im_factor = (max_im - min_im) / (height - 1)
-            '''Pick a random interesting point, set the surrounding parameters.'''
-            p1 = random.randint(0, len(interesting_points) - 1)
-            p1_x = interesting_points[p1][0] - adjust
-            p1_y = interesting_points[p1][1] - adjust
-            p1_real = min_re + p1_x * re_factor
-            p1_imaginary = max_im - p1_y * im_factor
-        for x in range(width - 1):
-            for y in range(height - 1):
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        screen_utils.close_window()
-                        running = False
-                    elif event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_SPACE:
-                            screen.clear()
-                            return running
-                        if event.key == pygame.K_ESCAPE:
-                            screen_utils.close_window()
-                            running = False
-                # i = julia_formula(x, y, w, h, zoom, move_x, move_y, c_x, c_y, start_iter)
-                # i = julia_formula(x, y, width - 1, height - 1, 0.353, 0.288, max_iter)
-                i = julia_formula(x, y, width - 1, height - 1, p1_real, p1_imaginary, max_iter)
-                screen.point(x, y, (i << 21) + (i << 10) + i * 8)
         pygame.display.flip()
-
+        '''Toggles between displaying a section of the mandelbrot or showing a julia set'''
+        julia = not julia
         max_iter += iter_step
         if max_iter <= 200:
             zoom = 0.01
