@@ -93,6 +93,11 @@ def get_palette(name=""):
     return color_palette, str.capitalize(name)
 
 
+def get_random_color():
+    ret_color = random.choice(list(pygame.color.THECOLORS))
+    return ret_color
+
+
 def get_color_from_palette(palette_choice):
     ret_color = (pygame.color.Color(random.choice(palette_choice)))
     return ret_color
