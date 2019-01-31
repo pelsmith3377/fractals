@@ -18,21 +18,29 @@ from numba import jit
 
 
 @jit
-def mandelbrot_formula(x, y, w, h, min_re, max_re, re_factor, min_im, max_im, im_factor, max_iter, julia):
-    # re_factor = (max_re - min_re) / w
-    # im_factor = (max_im - min_im) / h
-    if julia:
-        z_re = 1.8 * (x - w / 2) / (0.5 * w)
-        z_im = 1.3 * (y - h / 2) / (0.5 * h)
-        # z_re = x * re_factor
-        # z_im = y * im_factor
-        c_re = min_re
-        c_im = min_im
-    else:
-        c_re = min_re + x * re_factor
-        c_im = max_im - y * im_factor
-        z_re = c_re
-        z_im = c_im
+def mandelbrot_formula(x, y, min_re, re_factor, max_im, im_factor, max_iter):
+    c_re = min_re + x * re_factor
+    c_im = max_im - y * im_factor
+    z_re = c_re
+    z_im = c_im
+    is_inside = True
+    for n in range(max_iter):
+        z_re2 = z_re * z_re
+        z_im2 = z_im * z_im
+        if z_re2 + z_im2 > 4:
+            is_inside = False
+            break
+        z_im = 2 * z_re * z_im + c_im
+        z_re = z_re2 - z_im2 + c_re
+    return is_inside, n
+
+
+@jit
+def julia_formula(x, y, w, h, min_re, min_im, max_iter):
+    z_re = 1.8 * (x - w / 2) / (0.5 * w)
+    z_im = 1.3 * (y - h / 2) / (0.5 * h)
+    c_re = min_re
+    c_im = min_im
     is_inside = True
     for n in range(max_iter):
         z_re2 = z_re * z_re
@@ -97,7 +105,6 @@ def mandelbrot(screen):
 
         start_time = time.time()
         for y in range(height - 1):
-            #c_im = max_im - y * im_factor
             for x in range(width - 1):
                 '''Checking for events really slows down the program.  I should just lock the keyboard 
                     on startup so I can comment this section out. (just kidding)'''
@@ -119,11 +126,10 @@ def mandelbrot(screen):
                     #     if verbose:
                     #         print("mouse: {}, {} / real: {}, imaginary {}".format(mouse_x, mouse_y,
                     #         mouse_real, mouse_imaginary))
-                #c_re = min_re + x * re_factor
                 if julia:
-                    is_inside, n = mandelbrot_formula(x, y, w, h, min_re, max_re, re_factor, min_im, max_im, im_factor, max_iter, julia)
+                    is_inside, n = julia_formula(x, y, w, h, min_re, min_im, max_iter)
                 else:
-                    is_inside, n = mandelbrot_formula(x, y, w, h, min_re, max_re, re_factor, max_im, max_im, im_factor, max_iter, julia)
+                    is_inside, n = mandelbrot_formula(x, y, min_re, re_factor, max_im, im_factor, max_iter)
                 if is_inside:
                     '''Black for points inside the mandelbrot set'''
                     screen.point(x, y, [0, 0, 0])
