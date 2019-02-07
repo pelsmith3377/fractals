@@ -43,7 +43,7 @@ def get_palette(name=""):
         c = random.randint(0, 8)
     else:
         name = str.lower(name)
-    searchable_color_names = ("red", "green", "blue", "orange", "yellow", "pink", "purple", "dark", "light", "gray",
+    searchable_color_names = ("red", "green", "blue", "orange", "yellow", "pink", "purple", "dark", "light",
                               "sea", "gold", "brown", "medium", "orchid", "brick", "turquoise", "white", "olive")
     color_palette = []
     if c == 0 or name == "fire":

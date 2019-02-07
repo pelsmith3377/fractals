@@ -1,10 +1,10 @@
 from screen_utils import *
 from lines import *
 from spiro import *
-from kaleidoscope import *
+# from kaleidoscope import *
 from biomorph import *
 from hopalong import *
-from mandelbrot import *
+from mandelbrot import mandelbrot
 
 
 def main():
@@ -13,7 +13,8 @@ def main():
         print(pygame.display.get_surface().get_size())
     running = True
     while running:
-        # running = biomorph(screen)
+        for _ in range(20):
+            running = biomorph(screen)
         running = mandelbrot(screen)
         # running = kaleidoscope(screen)
         for _ in range(5):

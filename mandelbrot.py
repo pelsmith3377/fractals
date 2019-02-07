@@ -59,9 +59,11 @@ def mandelbrot(screen):
     width, height = screen.sizeX, screen.sizeY
     w = width - 1
     h = height - 1
-    max_iter = 250
+    max_iter = 100
     iter_step = 20
-    zoom = 1
+    '''scale is the size of the viewing area within the mandelbrot set.  Smaller numbers means you are zooming
+        in on a smaller subsection of the mandelbrot.'''
+    scale = 1
     '''Explore the mandelbrot this many times before returning to main.'''
     mandelbrot_lifespan = 40
     '''On the first pass, when drawing the entire mandelbrot, add in points near max iteration.  These
@@ -95,13 +97,13 @@ def mandelbrot(screen):
             if julia:
                 p1 = random.randint(0, len(interesting_points) - 1)
             min_re = interesting_points[p1][0]
-            max_re = min_re + zoom
+            max_re = min_re + scale
             min_im = interesting_points[p1][1]
             max_im = min_im + (max_re - min_re) * height / width
             re_factor = (max_re - min_re) / (width - 1)
             im_factor = (max_im - min_im) / (height - 1)
-            if verbose:
-                print("Zooming in on interesting point{}:{}".format(p1, interesting_points[p1]))
+            # if verbose:
+            #     print("Zooming in on interesting point{}:{}".format(p1, interesting_points[p1]))
 
         start_time = time.time()
         for y in range(height - 1):
@@ -165,17 +167,17 @@ def mandelbrot(screen):
                   "to {}, time: {}".format(
                                         palette_name, max_iter, round(min_re, 2), round(max_re, 2),
                                         round(min_im, 2), round(max_im, 2), round(end_time - start_time, 2)))
-            print("number of interesting points:{}".format(len(interesting_points)))
+            # print("number of interesting points:{}".format(len(interesting_points)))
 
         pygame.display.flip()
         '''Toggles between displaying a section of the mandelbrot or showing a julia set'''
         julia = not julia
         max_iter += iter_step
         if max_iter <= 200:
-            zoom = 0.01
+            scale = 0.01
         elif max_iter <= 300:
-            zoom = 0.001
+            scale = 0.001
         else:
-            zoom = 0.0001
+            scale = 0.0001
     screen.clear()
     return running
