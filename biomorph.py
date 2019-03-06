@@ -64,26 +64,11 @@ def biomorph(screen):
     blue = random.randint(50, 255)
     '''Get a palette if needed.'''
     palette, palette_name = screen_utils.get_palette("search")
-    # random_color = screen_utils.get_random_color()
-    # random_color2 = screen_utils.get_random_color()
     random_color = palette[0]
-    random_color2 = palette[1]
-
     start_time = time.time()
     for i in range(ilimit):
         for j in range(jlimit):
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    screen_utils.close_window()
-                    running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        screen.clear()
-                        return running
-                    if event.key == pygame.K_ESCAPE:
-                        screen_utils.close_window()
-                        running = False
-
+            screen_utils.check_event()
             x0 = x_min + (x_max - x_min) * j / jlimit
             y0 = -y_min - (y_max - y_min) * i / ilimit
             x = x0

@@ -26,15 +26,16 @@ def kaleidoscope(screen):
         pygame.display.flip()
         screen.clock.tick(10)
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                screen_utils.close_window()
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    screen.clear()
-                    return running
-                if event.key == pygame.K_ESCAPE:
-                    screen_utils.close_window()
-                    running = False
+        # for event in pygame.event.get():
+        #     if event.type == pygame.QUIT:
+        #         screen_utils.close_window()
+        #         running = False
+        #     elif event.type == pygame.KEYDOWN:
+        #         if event.key == pygame.K_SPACE:
+        #             screen.clear()
+        #             return running
+        #         if event.key == pygame.K_ESCAPE:
+        #             screen_utils.close_window()
+        #             running = False
+        screen_utils.check_event()
     return running

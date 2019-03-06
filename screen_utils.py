@@ -2,10 +2,12 @@ import pygame
 import random
 import sys
 import config
+import os
 
 
 class Window:
     def __init__(self):
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
         # Set up some variables containing the screen size
         self.sizeX = 1200
@@ -21,7 +23,7 @@ class Window:
         self.halfX = int(self.sizeX / 2)
         self.halfY = int(self.sizeY / 2)
         self.clock = pygame.time.Clock()  # Create the clock object
-        pygame.display.set_caption("Pretty Math")  # Put a name on the window.
+        pygame.display.set_caption("Fractals")  # Put a name on the window.
         self.screen_update = 50
         self.screen_update_counter = 1
 
@@ -30,6 +32,22 @@ class Window:
 
     def clear(self):
         self.window.fill((0, 0, 0))
+
+
+def check_event():
+    running = True
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            close_window()
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            # if event.key == pygame.K_SPACE:
+            #     screen.clear()
+            #     return running
+            if event.key == pygame.K_ESCAPE:
+                close_window()
+                running = False
+    return running
 
 
 def close_window():
@@ -93,8 +111,21 @@ def get_palette(name=""):
     return color_palette, str.capitalize(name)
 
 
-def get_random_color():
-    ret_color = random.choice(list(pygame.color.THECOLORS))
+def get_random_color(value="random"):
+    r = random.randint(1, 254)
+    g = random.randint(1, 254)
+    b = random.randint(1, 254)
+
+    if value == "random":
+        # ret_color = random.choice(list(pygame.color.THECOLORS))
+        ret_color = [r, g, b]
+    elif value == "dark":
+        ret_color = [random.randint(0, 122), random.randint(0, 122), random.randint(0, 122)]
+    elif value == "light":
+        ret_color = [random.randint(166, 255), random.randint(166, 255), random.randint(166, 255)]
+        # ret_color = [(r+50) % 255, (g+50) % 255, (b+50) % 255]
+    else:
+        ret_color = [random.randint(20, 255), random.randint(20, 255), random.randint(20, 255)]
     return ret_color
 
 
@@ -104,6 +135,15 @@ def get_color_from_palette(palette_choice):
 
 
 def color_fade_from_palette(base_color, next_color, step, number_of_steps):
-    current_color = [x + (((y - x) / number_of_steps) * step) for x, y in
-                     zip(pygame.color.Color(base_color), pygame.color.Color(next_color))]
+    try:
+        if type(base_color) == str:
+            base_color = pygame.color.Color(base_color)
+        if type(next_color) == str:
+            next_color = pygame.color.Color(next_color)
+        current_color = [x + (((y - x) / number_of_steps) * step) for x, y in
+                         zip(base_color, next_color)]
+        # zip(pygame.color.Color(base_color), pygame.color.Color(next_color))]
+    except ValueError:
+        print("ValueError in color_face_from_palette.  Returning 'white'")
+        current_color = [255, 255, 255]
     return current_color

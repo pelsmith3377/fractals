@@ -38,22 +38,11 @@ def lines(screen):
     dir_x1 = random.randint(min_move, max_move)
     dir_x2 = random.randint(min_move, max_move)
     dir_y1 = random.randint(min_move, max_move)
-    dir_y2 = random.randint(min_move, max_move)
-    lines_lifespan = 22000
+    dir_y2 = dir_x2 + 1
+    lines_lifespan = 7000
+    screen.clear()
     for lifespan in range(lines_lifespan):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                screen_utils.close_window()
-                running = False
-                return running
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    screen.clear()
-                    return running
-                elif event.key == pygame.K_ESCAPE:
-                    screen_utils.close_window()
-                    running = False
-                    return running
+        screen_utils.check_event()
         current_color = screen_utils.color_fade_from_palette(base_color, next_color, step, number_of_steps)
         if step >= number_of_steps:
             step = 1

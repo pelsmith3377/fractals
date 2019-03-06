@@ -4,6 +4,7 @@ import config
 import random
 import pygame
 
+
 def get_hopalong_params(function):
     a = b = c = 10
     scale = 1
@@ -78,24 +79,12 @@ def get_hopalong_params(function):
         c = 0
         scale = 1.2
     else:  # how did we wind up here?
+        print("How did we wind up here? #1")
         a = 10
         b = 1
         c = 1
         scale = 1
     return a, b, c, scale, 0, 0
-
-
-# def catch_event(screen):
-#     running = True
-#     for event in pygame.event.get():
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_SPACE:
-#                 screen.clear()
-#                 a, b, c, scale, x, y = get_hopalong_params(function)
-#             elif event.key == pygame.K_ESCAPE:
-#                 running = False
-#                 close_window()
-#     return running
 
 
 def hopalong(screen):
@@ -117,7 +106,6 @@ def hopalong(screen):
             function = random.choice(hop_not_favorites)
         else:
             function = random.choice(hop_sucks)
-    # random_factor = random.random()
     a, b, c, scale, x, y = get_hopalong_params(function)
     palette_choice, palette_name = screen_utils.get_palette()
     active_color = screen_utils.get_color_from_palette(palette_choice)
@@ -128,22 +116,10 @@ def hopalong(screen):
     if verbose:
         print("function = {}, palette = {}, a = {}, b = {}, c = {}, "
               "scale = {}".format(function, palette_name, a, b, c, scale))
+    screen.clear()
     for step in range(start_over_counter):
         for i in range(color_change):  # change color once falls out
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    screen_utils.close_window()
-                    running = False
-                    return running
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        screen.clear()
-                        a, b, c, scale, x, y = get_hopalong_params(function)
-                        return running
-                    elif event.key == pygame.K_ESCAPE:
-                        running = False
-                        screen_utils.close_window()
-                        return running
+            screen_utils.check_event()
             if function == "Pelican":  # my attempt at coding Martin1 from scratch...slightly different output
                 if x > 0:
                     sign = 1
@@ -236,10 +212,8 @@ def hopalong(screen):
                 and causes these weird hoops to occasionally develop.  It's also not really the 
                 hopalong program anymore once you introduce this error.
             '''
-            # c += 0.00001
             pointx = int(x * scale + screen.halfX)
             pointy = int(y * scale + screen.halfY)
-            # if pointx >= 0 and pointx <= screen.sizeX and pointy >= 0 and pointy <= screen.sizeY:
             if 0 <= pointx <= screen.sizeX and 0 <= pointy <= screen.sizeY:
                 screen.point(pointx, pointy, active_color)
                 screen.screen_update_counter += 1
@@ -248,27 +222,9 @@ def hopalong(screen):
                 pygame.display.flip()
                 screen.screen_update_counter = 0
         active_color = screen_utils.get_color_from_palette(palette_choice)
-        #  step += 1
-        #  if step >= start_over_counter:
     screen.clear()
-    # if testing:
-    #     pass
-    # else:
-    #     function = random.choice(hop_types)
-    # a, b, c, scale, x, y = get_hopalong_params(function)
-    # palette_choice, palette_name = get_palette()
-    # active_color = get_color_from_palette(palette_choice)
     if verbose:
         print("function = {}, palette = {}, a = {}, b = {}, c = {}, "
               "scale = {}".format(function, palette_name, a, b, c, scale))
-    # step = 0
     return running
 
-# def main():
-#     screen = Window()
-#     hopalong(screen)
-#     close_window()
-#
-#
-# if __name__ == "__main__":
-#     main()

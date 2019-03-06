@@ -53,19 +53,19 @@ def julia_formula(x, y, w, h, min_re, min_im, max_iter):
     return is_inside, n
 
 
-def mandelbrot(screen):
+def mandelbrot(screen, mandelbrot_lifespan=20):
     running = config.running
     verbose = config.verbose
     width, height = screen.sizeX, screen.sizeY
-    w = width - 1
-    h = height - 1
+    # w = width
+    # h = height
     max_iter = 100
     iter_step = 20
     '''scale is the size of the viewing area within the mandelbrot set.  Smaller numbers means you are zooming
         in on a smaller subsection of the mandelbrot.'''
     scale = 1
     '''Explore the mandelbrot this many times before returning to main.'''
-    mandelbrot_lifespan = 40
+    # mandelbrot_lifespan = 40
     '''On the first pass, when drawing the entire mandelbrot, add in points near max iteration.  These
         are the most interesting places on the mandelbrot anyway.'''
     interesting_points = []
@@ -91,8 +91,8 @@ def mandelbrot(screen):
             max_im = 1.2
             min_re = -2.5
             max_re = 1.0
-            re_factor = (max_re - min_re) / (width - 1)
-            im_factor = (max_im - min_im) / (height - 1)
+            re_factor = (max_re - min_re) / width
+            im_factor = (max_im - min_im) / height
         else:
             if julia:
                 p1 = random.randint(0, len(interesting_points) - 1)
@@ -106,30 +106,11 @@ def mandelbrot(screen):
             #     print("Zooming in on interesting point{}:{}".format(p1, interesting_points[p1]))
 
         start_time = time.time()
-        for y in range(height - 1):
-            for x in range(width - 1):
-                '''Checking for events really slows down the program.  I should just lock the keyboard 
-                    on startup so I can comment this section out. (just kidding)'''
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        screen_utils.close_window()
-                        running = False
-                    elif event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_SPACE:
-                            screen.clear()
-                            return running
-                        if event.key == pygame.K_ESCAPE:
-                            screen_utils.close_window()
-                            running = False
-                    # elif event.type == pygame.MOUSEBUTTONDOWN:
-                    #     mouse_x, mouse_y = pygame.mouse.get_pos()
-                    #     mouse_real = min_re + mouse_x * re_factor
-                    #     mouse_imaginary = max_im - mouse_y * im_factor
-                    #     if verbose:
-                    #         print("mouse: {}, {} / real: {}, imaginary {}".format(mouse_x, mouse_y,
-                    #         mouse_real, mouse_imaginary))
+        for y in range(height):
+            for x in range(width):
+                screen_utils.check_event()
                 if julia:
-                    is_inside, n = julia_formula(x, y, w, h, min_re, min_im, max_iter)
+                    is_inside, n = julia_formula(x, y, width, height, min_re, min_im, max_iter)
                 else:
                     is_inside, n = mandelbrot_formula(x, y, min_re, re_factor, max_im, im_factor, max_iter)
                 if is_inside:
