@@ -59,7 +59,7 @@ def spiro(screen):
     if testing:
         print("step=%i" % step + ",l=%f" % j + ",k=%f" % k)
     if verbose:
-        print("palette={}, color change at {}, j={}, k={}".format(palette_name, steps_till_color_change, j, k))
+        print("Spiro: palette={}, color change at {}, j={}, k={}".format(palette_name, steps_till_color_change, j, k))
     running = True
     screen.clear()
     for _ in range(spiro_cycles):

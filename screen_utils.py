@@ -58,7 +58,7 @@ def close_window():
 def get_palette(name=""):
     c = -1
     if name == "":
-        c = random.randint(0, 8)
+        c = random.randint(0, 6)
     else:
         name = str.lower(name)
     searchable_color_names = ("red", "green", "blue", "orange", "yellow", "pink", "purple", "dark", "light",
@@ -103,6 +103,7 @@ def get_palette(name=""):
                 color_palette.append(i)
     '''If for some reason our palette is still empty, ie, searched for a string not in THECOLORS,
         then choose something and build a palette'''
+    # print("Palette was empty!  Making random palette.")
     if not len(color_palette):
         name = random.choice(searchable_color_names)
         for i in pygame.color.THECOLORS:

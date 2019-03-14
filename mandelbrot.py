@@ -74,19 +74,20 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
     for step in range(mandelbrot_lifespan):
         '''A random choice for various color schemes used by the program'''
         if config.testing:
-            color_scheme = 3
+            color_scheme = 0
         else:
-            color_scheme = random.randint(0, 5)
-        random_color = screen_utils.get_random_color()
-        '''One of the choices just does a modulo of the r/g/b components'''
-        red = random.randint(50, 255)
-        green = random.randint(50, 255)
-        blue = random.randint(50, 255)
-        '''Get a palette if needed.  Sending "search" to my get_palette function has it select
-            text fields from THECOLORS.  Other choices can be real ugly'''
-        palette, palette_name = screen_utils.get_palette("search")
-        '''Every 10th pass, just draw a full mandelbrot set'''
-        if step % 10 == 0:
+            if not julia:
+                color_scheme = random.randint(0, 5)
+                random_color = screen_utils.get_random_color()
+                '''One of the choices just does a modulo of the r/g/b components'''
+                red = random.randint(50, 255)
+                green = random.randint(50, 255)
+                blue = random.randint(50, 255)
+                '''Get a palette if needed.  Sending "search" to my get_palette function has it select
+                    text fields from THECOLORS.  Other choices can be real ugly'''
+                palette, palette_name = screen_utils.get_palette("search")
+        '''Every 20th pass, just draw a full mandelbrot set'''
+        if step % 20 == 0:
             min_im = -1.2
             max_im = 1.2
             min_re = -2.5
@@ -155,10 +156,10 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
         julia = not julia
         max_iter += iter_step
         if max_iter <= 200:
-            scale = 0.01
+            scale = 0.1
         elif max_iter <= 300:
-            scale = 0.001
+            scale = 0.01
         else:
-            scale = 0.0001
+            scale = 0.001
     screen.clear()
     return running

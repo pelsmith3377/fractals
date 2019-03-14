@@ -1,6 +1,7 @@
 import screen_utils
 import config
 import pygame
+import random
 import sys
 from lines import lines
 from spiro import spiro
@@ -22,29 +23,35 @@ def main():
         print(pygame.display.get_surface().get_size())
     running = True
     while running:
-        # stalks(screen)
-        flame(screen, 5)
+        if config.testing:
+            mandelbrot(screen)
+        else:
+            x = random.randint(0,7)
+            if x == 0:
+                mandelbrot(screen, 40)
+            elif x == 1:
+                flame(screen, 15)
+            elif x == 2:
+                ifs(screen)
+            elif x == 3:
+                # stalks(screen)
+                novaretti(screen, 5)
+            elif x == 4:
+                lorenz(screen)
+            elif x == 5:
+                for _ in range(5):
+                    spiro(screen)
+            elif x == 6:
+                lines(screen)
+            elif x == 7:
+                for _ in range(3):
+                    hopalong(screen)
+            elif x == 8:
+                newton(screen)
+            elif x == 9:
+                for _ in range(3):
+                    biomorph(screen)
 
-        novaretti(screen, 5)
-
-        lorenz(screen)
-
-        for _ in range(5):
-            spiro(screen)
-
-        lines(screen)
-
-        for _ in range(3):
-            hopalong(screen)
-
-        ifs(screen)
-
-        newton(screen)
-
-        for _ in range(3):
-            biomorph(screen)
-
-        mandelbrot(screen, 10)
         # screen.clock.tick(1)
 
         # kaleidoscope(screen)

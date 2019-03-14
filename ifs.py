@@ -5,12 +5,12 @@ Most of these functions are from https://github.com/ActiveState/code
 import random
 import pygame
 import math
-from screen_utils import get_palette, get_color_from_palette, check_event
+import screen_utils
 import config
 import cmath
 
 
-def fern(screen, current_color):
+def fern(screen, current_color, iterations=10000):
     # fern_size_x = random.randint(30, 100)
     # fern_size_y = random.randint(30, 100)
     # fern_x = random.randint(0, screen.sizeX - fern_size_x)
@@ -31,8 +31,9 @@ def fern(screen, current_color):
     yb = 10.5
     x = 0.0
     y = 0.0
-    for k in range(fern_x * fern_y):
-        check_event()
+    # for k in range(fern_x * fern_y):
+    for k in range(iterations):
+        screen_utils.check_event()
         p = random.random()
         if p <= mat[0][6]:
             i = 0
@@ -74,7 +75,7 @@ def triangle(x0, y0, x1, y1, x2, y2, screen):
     triangle(x0, y0, x3, y3, x5, y5, screen)
     triangle(x3, y3, x1, y1, x4, y4, screen)
     triangle(x5, y5, x4, y4, x2, y2, screen)
-    check_event()
+    screen_utils.check_event()
     pygame.display.flip()
 
 
@@ -97,7 +98,7 @@ def snowflake(ax, ay, bx, by, screen):
     snowflake(cx, cy, dx, dy, screen)
     snowflake(dx, dy, ex, ey, screen)
     snowflake(ex, ey, bx, by, screen)
-    check_event()
+    screen_utils.check_event()
 
 
 def koch(screen):
@@ -155,11 +156,11 @@ def spiral(screen):
     ts = math.sin(t)
     tc = math.cos(t)
     r1 = 0.2 * random.random() + 0.1 # scale factor of outmost copies on the spiral arms
-    r0 = 1.0 - r1 # scale factor of central copy
+    r0 = 1.0 - r1  # scale factor of central copy
     p0 = r0 ** 2.0 / (n * r1 ** 2.0 + r0 ** 2.0) # probability of central copy
     x = 0.0; y = 0.0
     for i in range(maxIt):
-        check_event()
+        screen_utils.check_event()
         if random.random() < p0:  # central copy
             x *= r0
             y *= r0 # scaling
@@ -184,11 +185,57 @@ def spiral(screen):
     return running
 
 
+def popcorn(screen, palette):
+    base_color = random.choice(palette)
+    next_color = random.choice(palette)
+    max_iter = random.randint(20, 60)
+    h = random.uniform(0.01, 0.1)
+    tan_factor = random.uniform(0.1, 4)
+    wxmin = -4.0
+    wxmax = 4.0
+    wymin = -3.0
+    wymax = 3.0
+    wwid = (wxmax - wxmin)
+    whgt = (wymax - wymin)
+    dxmin = 0
+    dxmax = screen.sizeX
+    dymin = 0
+    dymax = screen.sizeY
+    dwid = (dxmax - dxmin)
+    dhgt = (dymax - dymin)
+
+    x_step = 10
+    y_step = 10
+
+
+    zoom = 1
+    for x in range(0, screen.sizeX, x_step):
+        for y in range(0, screen.sizeY, y_step):
+            wx = wxmin + wwid * (x - dxmin) / dwid
+            wy = wymin + whgt * (y - dymin) / dhgt
+            for i in range(max_iter):
+                screen_utils.check_event()
+                newx = wx - h * math.sin(wy + math.tan(tan_factor * wy))
+                newy = wy - h * math.sin(wx + math.tan(tan_factor * wx))
+                wx, wy = newx, newy
+                dx = int(dxmin + dwid * (wx - wxmin) / wwid)
+                dy = int(dymin + dhgt * (wy - wymin) / whgt)
+                if (0 <= dx < dxmax) and (0 <= dy < dymax):
+                    current_color = screen_utils.color_fade_from_palette(base_color, next_color, i, max_iter)
+                    screen.point(dx, dy, current_color)
+
+                #print(wx, wy, "--", newx, newy, "-----", dx, dy)
+        pygame.display.flip()
+
+
 def ifs(screen):
     running = True
-    choice = random.randint(0, 3)
+    if config.testing:
+        choice = 2
+    else:
+        choice = random.randint(0, 3)
     screen.clear()
-    palette, palette_name = get_palette("rainbow")
+    palette, palette_name = screen_utils.get_palette()
     if config.verbose:
         print("Palette:{}".format(palette_name))
 
@@ -196,9 +243,18 @@ def ifs(screen):
         spiral(screen)
         screen.clear()
     elif choice == 1:
-        current_color = get_color_from_palette(palette)
-        fern(screen, current_color)
+        current_color = screen_utils.get_color_from_palette(palette)
+        fern(screen, current_color, 1000000)
+        current_color = screen_utils.get_color_from_palette(palette)
+        fern(screen, current_color, 200000)
         screen.clear()
+    elif choice == 2:
+        for _ in range(10):
+            palette, palette_name = screen_utils.get_palette()
+            if config.verbose:
+                print("Popcorn - Palette:{}".format(palette_name))
+            popcorn(screen, palette)
+            screen.clear()
     else:
         koch(screen)
         screen.clear()

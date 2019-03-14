@@ -93,11 +93,11 @@ def hopalong(screen):
     # OG hop types = ("Martin1", "Martin2", "Ejk1", "Ejk2", "Ejk3", "Ejk4", "Ejk5", "Ejk6")
     # Weight toward choosing favorites.
     hop_favorites = ("Pelican", "Pelican3", "Martin1", "Ejk1", "Ejk2", "Ejk4")
-    hop_not_favorites = ("Pelican2", "Martin2", "Martin3", "Ejk3", "Ejk5")
-    hop_sucks = ("Gingerbread", "Ejk6")  # just plain ugly
+    hop_not_favorites = ("Pelican2", "Martin2", "Martin3", "Ejk3", "Ejk5", "Gingerbread")
+    hop_sucks = ("Ejk6")  # just plain ugly
     testing_counter = 0
     if testing:
-        function = "Ejk3"
+        function = "Pelican3"
     else:
         favor_weight = random.randint(0, 1000)
         if favor_weight < 970:

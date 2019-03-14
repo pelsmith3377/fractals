@@ -98,7 +98,8 @@ def flame(screen, flame_lifespan=5):
         v = []
         flame_name = ""
         flame_variations = ["linear", "sinusoidal", "spherical", "tangential", "swirl", "horseshoe", "polar",
-                            "handkerchief", "heart", "disc", "diamond", "ex", "exponential", "power"]
+                            "handkerchief", "heart", "disc", "diamond", "ex", "julia", "popcorn", "power"]
+        flame_unused_variations = ["exponential"]
         if config.testing:
             num_combos = 2
         else:
@@ -106,7 +107,7 @@ def flame(screen, flame_lifespan=5):
         for _ in range(num_combos):
             seed = random.uniform(0.5, 1.2)
             if config.testing:
-                flame_var = "power"
+                flame_var = "heart"
             else:
                 flame_var = random.choice(flame_variations)
             if flame_var == "linear":
@@ -141,14 +142,23 @@ def flame(screen, flame_lifespan=5):
                 m0 = lambda x, y: r(x, y) * n0(x, y)**3
                 m1 = lambda x, y: r(x, y) * n1(x, y)**3
                 v += [[seed, lambda x, y: (m0(x, y) + m1(x, y), m0(x, y) - m1(x, y))], ]
-            # elif flame_var == "popcorn":
-            #     dx = lambda y: tan(3 * y)
-            #     dy = lambda x: tan(3 * x)
-            #     nx = lambda x: x + c(2, 0) * sin(dx(x))
-            #     ny = lambda y: y + c(2, 1) * sin(dy(y))
-            #     v += [[seed, lambda x, y: (nx(x), ny(y))], ]
+            elif flame_var == "julia":
+                aa = lambda x, y: atan2(x, y) / 2
+                a3 = lambda x, y: aa(x, y) + pi if random.randint(0, 1) else aa(x, y)
+                rr = lambda x, y: (x * x + y * y)**0.25
+                v += [[seed, lambda x, y: (rr(x, y) * cos(a3(x, y)), rr(x, y) * sin(a3(x, y)))], ]
+            elif flame_var == "popcorn":
+                dy = lambda y: y + tan(10 * y)
+                dx = lambda x: x + tan(10 * x)
+                nx = lambda x: x - 0.05 * sin(dx(x))
+                ny = lambda y: y - 0.05 * sin(dy(y))
+                v += [[seed, lambda x, y: (nx(x), ny(y))], ]
             elif flame_var == "exponential":
-                dx = lambda x: e**(x - 1)
+                try:  # number too large exceptions - troubleshooting
+                    dx = lambda x: e**(x - 1)
+                except:
+                    print("exception occurred")
+                    dx = 30000
                 dy = lambda y: pi * y
                 v += [[seed, lambda x, y: (dx(x) * cos(dy(y)), dx(x) * sin(dy(y)))], ]
             elif flame_var == "power":
@@ -159,18 +169,28 @@ def flame(screen, flame_lifespan=5):
                 flame_name = flame_name + "linear" + " "
                 v += [[seed, lambda x, y: (x, y)], ]
             flame_name = flame_name + flame_var + " "
-        coefficients = []
-        for i in range(7):
-            coefficients.append(gen_coefficients())
         table = [
             # p	  a	 b  c  d  e  f , color
-            [.2, gen_coefficients(), (0, 255, 255)],
-            [.2, coefficients[1], (255, 0, 255)],
-            [.2, coefficients[2], (255, 255, 0)],
-            [.1, coefficients[3], (0, 0, 255)],
-            [.1, coefficients[4], (255, 0, 0)],
-            [.1, coefficients[5], (0, 255, 0)],
-            [.1, coefficients[6], (255, 255, 255)],
+            # swapped in a neon palette
+            [.1, gen_coefficients(), (255, 175, 190)],
+            [.1, gen_coefficients(), (230, 10, 150)],
+            [.1, gen_coefficients(), (255, 240, 0)],
+            [.1, gen_coefficients(), (25, 255, 70)],
+            [.1, gen_coefficients(), (10, 165, 225)],
+            [.1, gen_coefficients(), (155, 75, 160)],
+            [.1, gen_coefficients(), (140, 200, 70)],
+            [.1, gen_coefficients(), (215, 225, 65)],
+            [.1, gen_coefficients(), (245, 130, 40)],
+            [.1, gen_coefficients(), (210, 20, 70)],
+            #
+            # [.2, gen_coefficients(), (0, 255, 255)],
+            # [.2, coefficients[1], (255, 0, 255)],
+            # [.2, coefficients[2], (255, 255, 0)],
+            # [.1, coefficients[3], (0, 0, 255)],
+            # [.1, coefficients[4], (255, 0, 0)],
+            # [.1, coefficients[5], (0, 255, 0)],
+            # [.1, coefficients[6], (255, 255, 255)],
+            #
         ]
         print("flame, type:{}, a:{}".format(flame_name, seed))
         for iterate in range(max_iter):
