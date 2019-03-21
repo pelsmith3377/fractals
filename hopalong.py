@@ -119,7 +119,7 @@ def hopalong(screen):
     screen.clear()
     for step in range(start_over_counter):
         for i in range(color_change):  # change color once falls out
-            screen_utils.check_event()
+            screen_utils.check_event(screen)
             if function == "Pelican":  # my attempt at coding Martin1 from scratch...slightly different output
                 if x > 0:
                     sign = 1

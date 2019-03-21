@@ -14,7 +14,7 @@ from mandelbrot import mandelbrot
 from lorenz import lorenz
 from novaretti import novaretti
 from flame import flame
-from stalks import stalks
+from orbit import orbit
 
 
 def main():
@@ -24,9 +24,9 @@ def main():
     running = True
     while running:
         if config.testing:
-            mandelbrot(screen)
+            orbit(screen)
         else:
-            x = random.randint(0,7)
+            x = random.randint(0, 10)
             if x == 0:
                 mandelbrot(screen, 40)
             elif x == 1:
@@ -49,8 +49,10 @@ def main():
             elif x == 8:
                 newton(screen)
             elif x == 9:
-                for _ in range(3):
+                for _ in range(10):
                     biomorph(screen)
+            else:
+                flame(screen, 5)
 
         # screen.clock.tick(1)
 

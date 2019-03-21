@@ -68,7 +68,7 @@ def biomorph(screen):
     start_time = time.time()
     for i in range(ilimit):
         for j in range(jlimit):
-            screen_utils.check_event()
+            screen_utils.check_event(screen)
             x0 = x_min + (x_max - x_min) * j / jlimit
             y0 = -y_min - (y_max - y_min) * i / ilimit
             x = x0
@@ -197,9 +197,10 @@ def biomorph(screen):
     end_time = time.time()
     if config.verbose:
         elapsed_time = end_time - start_time
-        print('Palette={}, C={}+{}i, biomorph type:{}, elapsed time={}'.format(palette_name, c_re, c_im,
+        print('Biomorph, Palette={}, C={}+{}i, biomorph type:{}, elapsed time={}'.format(palette_name, c_re, c_im,
                                                                                bio_name, elapsed_time))
 
     pygame.display.flip()
-    screen.clock.tick(1)
+    time.sleep(4)
+    screen.clear()
     return running

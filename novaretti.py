@@ -67,7 +67,7 @@ def novaretti(screen, novaretti_lifespan=5):
                   "iter={}".format(palette_name, cr, ci, field, max_iter))
         for y in range(height - 1):
             for x in range(width - 1):
-                screen_utils.check_event()
+                screen_utils.check_event(screen)
                 n = novaretti_formula(x, y, width, height, cr, ci, field, max_iter)
                 n = n % fade
                 # if n < 26:

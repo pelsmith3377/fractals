@@ -74,18 +74,18 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
     for step in range(mandelbrot_lifespan):
         '''A random choice for various color schemes used by the program'''
         if config.testing:
-            color_scheme = 0
+            color_scheme = 4
         else:
             if not julia:
                 color_scheme = random.randint(0, 5)
-                random_color = screen_utils.get_random_color()
-                '''One of the choices just does a modulo of the r/g/b components'''
-                red = random.randint(50, 255)
-                green = random.randint(50, 255)
-                blue = random.randint(50, 255)
-                '''Get a palette if needed.  Sending "search" to my get_palette function has it select
-                    text fields from THECOLORS.  Other choices can be real ugly'''
-                palette, palette_name = screen_utils.get_palette("search")
+        random_color = screen_utils.get_random_color()
+        '''One of the choices just does a modulo of the r/g/b components'''
+        red = random.randint(50, 255)
+        green = random.randint(50, 255)
+        blue = random.randint(50, 255)
+        '''Get a palette if needed.  Sending "search" to my get_palette function has it select
+            text fields from THECOLORS.  Other choices can be real ugly'''
+        palette, palette_name = screen_utils.get_palette("neon")
         '''Every 20th pass, just draw a full mandelbrot set'''
         if step % 20 == 0:
             min_im = -1.2
@@ -104,12 +104,12 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
             re_factor = (max_re - min_re) / (width - 1)
             im_factor = (max_im - min_im) / (height - 1)
             # if verbose:
-            #     print("Zooming in on interesting point{}:{}".format(p1, interesting_points[p1]))
+            #     print_screen("Zooming in on interesting point{}:{}".format(p1, interesting_points[p1]))
 
         start_time = time.time()
         for y in range(height):
             for x in range(width):
-                screen_utils.check_event()
+                screen_utils.check_event(screen)
                 if julia:
                     is_inside, n = julia_formula(x, y, width, height, min_re, min_im, max_iter)
                 else:
@@ -134,6 +134,7 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
                         current_color = screen_utils.color_fade_from_palette("black", random_color, n, max_iter)
                     else:
                         current_color = pygame.color.Color(palette[n % len(palette)])
+                        # current_color = palette[n % len(palette)]
                     screen.point(x, y, current_color)
                     '''If this is the first pass (drawing the entire mandelbrot), create a list
                         of interesting points for zooming in on'''
@@ -149,7 +150,7 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
                   "to {}, time: {}".format(
                                         palette_name, max_iter, round(min_re, 2), round(max_re, 2),
                                         round(min_im, 2), round(max_im, 2), round(end_time - start_time, 2)))
-            # print("number of interesting points:{}".format(len(interesting_points)))
+            # print_screen("number of interesting points:{}".format(len(interesting_points)))
 
         pygame.display.flip()
         '''Toggles between displaying a section of the mandelbrot or showing a julia set'''

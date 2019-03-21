@@ -7,6 +7,7 @@ import pygame
 import math
 import screen_utils
 import config
+import time
 import cmath
 
 
@@ -33,7 +34,7 @@ def fern(screen, current_color, iterations=10000):
     y = 0.0
     # for k in range(fern_x * fern_y):
     for k in range(iterations):
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
         p = random.random()
         if p <= mat[0][6]:
             i = 0
@@ -56,7 +57,7 @@ def fern(screen, current_color, iterations=10000):
             update_counter = 0
 
 
-def triangle(x0, y0, x1, y1, x2, y2, screen):
+def triangle(x0, y0, x1, y1, x2, y2, screen, current_color):
     a = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
     b = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
     c = math.sqrt((x0 - x2) ** 2 + (y0 - y2) ** 2)
@@ -69,17 +70,17 @@ def triangle(x0, y0, x1, y1, x2, y2, screen):
     x5 = (x2 + x0) / 2
     y5 = (y2 + y0) / 2
 
-    pygame.draw.line(screen.window, [255, 0, 0], (int(x3), int(y3)), (int(x4), int(y4)))
+    pygame.draw.line(screen.window, current_color, (int(x3), int(y3)), (int(x4), int(y4)))
     # pygame.draw.line(screen.window, [0, 255, 0], (int(x4), int(y4)), (int(x5), int(y5)))
     # pygame.draw.line(screen.window, [0, 0, 255], (int(x5), int(y5)), (int(x3), int(y3)))
-    triangle(x0, y0, x3, y3, x5, y5, screen)
-    triangle(x3, y3, x1, y1, x4, y4, screen)
-    triangle(x5, y5, x4, y4, x2, y2, screen)
-    screen_utils.check_event()
+    triangle(x0, y0, x3, y3, x5, y5, screen, current_color)
+    triangle(x3, y3, x1, y1, x4, y4, screen, current_color)
+    triangle(x5, y5, x4, y4, x2, y2, screen, current_color)
+    screen_utils.check_event(screen)
     pygame.display.flip()
 
 
-def snowflake(ax, ay, bx, by, screen):
+def snowflake(ax, ay, bx, by, screen, current_color):
     f = math.sqrt((bx - ax) ** 2 + (by - ay) ** 2)
     if f < 1:
         return
@@ -93,15 +94,15 @@ def snowflake(ax, ay, bx, by, screen):
     dy = (ay + by) / 2 - cs * h
     ex = bx - cs * f3
     ey = by - sn * f3
-    triangle(cx, cy, dx, dy, ex, ey, screen)
-    snowflake(ax, ay, cx, cy, screen)
-    snowflake(cx, cy, dx, dy, screen)
-    snowflake(dx, dy, ex, ey, screen)
-    snowflake(ex, ey, bx, by, screen)
-    screen_utils.check_event()
+    triangle(cx, cy, dx, dy, ex, ey, screen, current_color)
+    snowflake(ax, ay, cx, cy, screen, current_color)
+    snowflake(cx, cy, dx, dy, screen, current_color)
+    snowflake(dx, dy, ex, ey, screen, current_color)
+    snowflake(ex, ey, bx, by, screen, current_color)
+    screen_utils.check_event(screen)
 
 
-def koch(screen):
+def koch(screen, current_color):
     imgx = screen.sizeX
     imgy = screen.sizeY
     # imgx = 512
@@ -115,11 +116,11 @@ def koch(screen):
         y0 = my2 + r * math.sin(a * k)
         x1 = mx2 + r * math.cos(a * (k + 1))
         y1 = my2 + r * math.sin(a * (k + 1))
-        snowflake(x0, y0, x1, y1, screen)
+        snowflake(x0, y0, x1, y1, screen, current_color)
 
     x2 = mx2 + r * math.cos(a)
     y2 = my2 + r * math.sin(a)
-    triangle(x0, y0, x1, y1, x2, y2, screen)
+    triangle(x0, y0, x1, y1, x2, y2, screen, current_color)
 
 
 def percolate(screen):
@@ -142,9 +143,9 @@ def percolate(screen):
 
 # Random Spiral IFS Fractals
 # FB - 20130928
-def spiral(screen):
+def spiral(screen, current_color):
     running = True
-    current_color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+    # current_color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
     update_counter = 0
     imgx = screen.sizeX
     imgy = screen.sizeY
@@ -160,7 +161,7 @@ def spiral(screen):
     p0 = r0 ** 2.0 / (n * r1 ** 2.0 + r0 ** 2.0) # probability of central copy
     x = 0.0; y = 0.0
     for i in range(maxIt):
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
         if random.random() < p0:  # central copy
             x *= r0
             y *= r0 # scaling
@@ -214,7 +215,7 @@ def popcorn(screen, palette):
             wx = wxmin + wwid * (x - dxmin) / dwid
             wy = wymin + whgt * (y - dymin) / dhgt
             for i in range(max_iter):
-                screen_utils.check_event()
+                screen_utils.check_event(screen)
                 newx = wx - h * math.sin(wy + math.tan(tan_factor * wy))
                 newy = wy - h * math.sin(wx + math.tan(tan_factor * wx))
                 wx, wy = newx, newy
@@ -224,39 +225,71 @@ def popcorn(screen, palette):
                     current_color = screen_utils.color_fade_from_palette(base_color, next_color, i, max_iter)
                     screen.point(dx, dy, current_color)
 
-                #print(wx, wy, "--", newx, newy, "-----", dx, dy)
-        pygame.display.flip()
+                #print_screen(wx, wy, "--", newx, newy, "-----", dx, dy)
+            pygame.display.flip()
+
+
+# Apollonian Gasket Fractal using IFS
+# FB - 20120114
+def gasket(screen, current_color):
+    maxIt = 500000  # of iterations
+    imgx = screen.sizeX
+    imgy = screen.sizeY
+
+    s = math.sqrt(3.0)
+
+    def f(z):
+        return 3.0 / (1.0 + s - z) - (1.0 + s) / (2.0 + s)
+    iterated_function_system = ["f(z)", "f(z) * complex(-1.0, s) / 2.0", "f(z) * complex(-1.0, -s) / 2.0"]
+
+    xa = -0.6
+    xb = 0.9
+    ya = -0.75
+    yb = 0.75
+
+    z = complex(0.0, 0.0)
+    for i in range(maxIt):
+        screen_utils.check_event(screen)
+        z = eval(iterated_function_system[random.randint(0, 2)])
+        kx = int((z.real - xa) / (xb - xa) * (imgx - 1))
+        ky = int((z.imag - ya) / (yb - ya) * (imgy - 1))
+        if kx >=0 and kx < imgx and ky >= 0 and ky < imgy:
+            # image.putpixel((kx, ky), (255, 255, 255))
+            screen.point(kx, ky, current_color)
+            if i % 50 == 0:
+                pygame.display.flip()
 
 
 def ifs(screen):
     running = True
     if config.testing:
-        choice = 2
+        choice = 3
     else:
-        choice = random.randint(0, 3)
+        choice = random.randint(0, 4)
     screen.clear()
     palette, palette_name = screen_utils.get_palette()
     if config.verbose:
-        print("Palette:{}".format(palette_name))
+        print("IFS, Palette:{}".format(palette_name))
+    current_color = screen_utils.get_color_from_palette(palette)
 
     if choice == 0:
-        spiral(screen)
-        screen.clear()
+        spiral(screen, current_color)
     elif choice == 1:
-        current_color = screen_utils.get_color_from_palette(palette)
         fern(screen, current_color, 1000000)
         current_color = screen_utils.get_color_from_palette(palette)
         fern(screen, current_color, 200000)
-        screen.clear()
     elif choice == 2:
         for _ in range(10):
             palette, palette_name = screen_utils.get_palette()
             if config.verbose:
                 print("Popcorn - Palette:{}".format(palette_name))
             popcorn(screen, palette)
+            time.sleep(2)
             screen.clear()
+    elif choice == 3:
+        gasket(screen, current_color)
     else:
-        koch(screen)
-        screen.clear()
-    # input()
+        koch(screen, current_color)
+    time.sleep(4)
+    screen.clear()
     return running

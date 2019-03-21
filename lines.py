@@ -42,7 +42,7 @@ def lines(screen):
     lines_lifespan = 7000
     screen.clear()
     for lifespan in range(lines_lifespan):
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
         current_color = screen_utils.color_fade_from_palette(base_color, next_color, step, number_of_steps)
         if step >= number_of_steps:
             step = 1

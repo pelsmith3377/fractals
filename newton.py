@@ -36,8 +36,9 @@ def z_function(z, c):
     elif c == 16: c = cmath.log(z)  #
     elif c == 17: c = z**math.e - 1.0  #
     elif c == 18: c = z**4 + z - 1.0  #
+    elif c == 19: c = z**3 + 2 * z * z + z + 3
     else: c = z**10 - 1.0
-    # print(c)
+    # print_screen(c)
     return c
 
 
@@ -65,9 +66,9 @@ def newton(screen):
     if config.testing:
         c = 19
     else:
-        c = random.randint(0, 12)
+        c = random.randint(0, 11)
     if config.verbose:
-        print("starting c={} with {} iterations".format(c, max_iterations))
+        print("Newton, starting c={} with {} iterations".format(c, max_iterations))
     # screen.clear()
     # draw the fractal
     for y in range(size_y):
@@ -76,7 +77,7 @@ def newton(screen):
             zx = x * (xb - xa) / (size_x - 1) + xa
             z = complex(zx, zy)
             for i in range(max_iterations):
-                screen_utils.check_event()
+                screen_utils.check_event(screen)
                 # complex numerical derivative
                 dz = (z_function(z + complex(h, h), c) - z_function(z, c)) / complex(h, h)
                 z0 = z - z_function(z, c) / (dz + 0.00001) # Newton iteration
@@ -88,5 +89,5 @@ def newton(screen):
     end_time = time.time()
     if config.verbose:
         print("c={} completed in {}".format(c, end_time - start_time))
-    screen.clock.tick(1)
+    time.sleep(4)
     return running

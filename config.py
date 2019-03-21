@@ -1,4 +1,4 @@
 running = True
 verbose = True
-testing = False
-full_screen = True
+testing = True
+full_screen = False

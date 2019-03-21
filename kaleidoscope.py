@@ -37,5 +37,5 @@ def kaleidoscope(screen):
         #         if event.key == pygame.K_ESCAPE:
         #             screen_utils.close_window()
         #             running = False
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
     return running

@@ -63,7 +63,7 @@ def spiro(screen):
     running = True
     screen.clear()
     for _ in range(spiro_cycles):
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
         t = math.radians(i)
         new_x = radius * ((1 - k) * math.cos(t) + j * k * math.cos((1 - k) * t / k))
         new_y = radius * ((1 - k) * math.sin(t) - j * k * math.sin((1 - k) * t / k))

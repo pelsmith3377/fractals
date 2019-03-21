@@ -3,6 +3,7 @@ import random
 import sys
 import config
 import os
+import time
 
 
 class Window:
@@ -20,6 +21,7 @@ class Window:
         else:
             self.window = pygame.display.set_mode([self.sizeX, self.sizeY])  # Create the pygame window
 
+        self.surface = pygame.Surface((self.sizeX, self.sizeY))
         self.halfX = int(self.sizeX / 2)
         self.halfY = int(self.sizeY / 2)
         self.clock = pygame.time.Clock()  # Create the clock object
@@ -33,14 +35,19 @@ class Window:
     def clear(self):
         self.window.fill((0, 0, 0))
 
+    def print_screen(self):
+        pygame.image.save(self.window, "fractal_screenshot_{}.jpg".format(time.time_ns()))
 
-def check_event():
+
+def check_event(screen):
     running = True
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             close_window()
             running = False
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_PRINT:
+                screen.print_screen()
             # if event.key == pygame.K_SPACE:
             #     screen.clear()
             #     return running
@@ -86,15 +93,19 @@ def get_palette(name=""):
         name = "Random"
         for i in range(10):
             color_palette.append(random.choice(list(pygame.color.THECOLORS)))
-    elif c == 7 or name == "complementary":
-        name = "Complementary"
-        c2 = random.randint(0, 3)
-        if c2 == 0:
-            color_palette = ['yellow', 'violet']
-        elif c2 == 1:
-            color_palette = ['green', 'red']
-        else:
-            color_palette = ['blue', 'orange']
+    # elif c == 7 or name == "complementary":  # Ugly
+    #     name = "Complementary"
+    #     c2 = random.randint(0, 3)
+    #     if c2 == 0:
+    #         color_palette = ['yellow', 'violet']
+    #     elif c2 == 1:
+    #         color_palette = ['green', 'red']
+    #     else:
+    #         color_palette = ['blue', 'orange']
+    elif c == 7 or name == "neon":
+        name = "Neon"
+        color_palette = ["red", "mediumspringgreen", "hotpink", "lightgray", "gold", "limegreen", "violet", "skyblue",
+                         "seagreen", "orange", "lightpink"]
     else:
         if not name or name == "search":
             name = random.choice(searchable_color_names)
@@ -103,7 +114,7 @@ def get_palette(name=""):
                 color_palette.append(i)
     '''If for some reason our palette is still empty, ie, searched for a string not in THECOLORS,
         then choose something and build a palette'''
-    # print("Palette was empty!  Making random palette.")
+    # print_screen("Palette was empty!  Making random palette.")
     if not len(color_palette):
         name = random.choice(searchable_color_names)
         for i in pygame.color.THECOLORS:

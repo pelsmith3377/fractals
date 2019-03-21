@@ -71,7 +71,7 @@ def rand_j(table):
 
 @jit
 def flame_function(j, x, y, v, table):
-    # print j, table[j]
+    # print_screen j, table[j]
     a, b, c, d, e, f = table[j][1]
     out_x = 0
     out_y = 0
@@ -98,7 +98,8 @@ def flame(screen, flame_lifespan=5):
         v = []
         flame_name = ""
         flame_variations = ["linear", "sinusoidal", "spherical", "tangential", "swirl", "horseshoe", "polar",
-                            "handkerchief", "heart", "disc", "diamond", "ex", "julia", "popcorn", "power"]
+                            "handkerchief", "heart", "disc", "diamond", "ex", "julia", "popcorn", "power",
+                            "negative_power"]
         flame_unused_variations = ["exponential"]
         if config.testing:
             num_combos = 2
@@ -107,7 +108,7 @@ def flame(screen, flame_lifespan=5):
         for _ in range(num_combos):
             seed = random.uniform(0.5, 1.2)
             if config.testing:
-                flame_var = "heart"
+                flame_var = "negative_power"
             else:
                 flame_var = random.choice(flame_variations)
             if flame_var == "linear":
@@ -164,6 +165,8 @@ def flame(screen, flame_lifespan=5):
             elif flame_var == "power":
                 v += [[seed, lambda x, y: (r(x, y)**sin(atan2(x, y)) * cos(atan2(x, y)),
                                            r(x, y)**sin(atan2(x, y)) * sin(atan2(x, y)))], ]
+            elif flame_var == "negative_power":
+                v += [[seed, lambda x, y: ((y), (x**-3))], ]
             else:  # how did we wind up here
                 print("How did we wind up here? #2")
                 flame_name = flame_name + "linear" + " "
@@ -204,7 +207,7 @@ def flame(screen, flame_lifespan=5):
                 pc = join_colors(pc, table[j][2])
             c = join_colors(pc, get_color(px, py, screen))
             set_color(px, py, c, screen)
-            screen_utils.check_event()
+            screen_utils.check_event(screen)
             if iterate % 5000 == 0:
                 pygame.display.update()
         screen.clear()

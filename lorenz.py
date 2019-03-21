@@ -37,7 +37,7 @@ def lorenz(screen):
     if config.verbose:
             print("lorenz, palette:{}".format(palette_name))
     for t2 in range(lorenz_cycles):
-        screen_utils.check_event()
+        screen_utils.check_event(screen)
         xn = x + 10 * (y - x) * dt
         yn = y + (26 * x - y - x * z) * dt
         zn = z + (x * y - (8 / 3) * z) * dt
