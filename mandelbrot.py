@@ -68,7 +68,7 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
     # mandelbrot_lifespan = 40
     '''On the first pass, when drawing the entire mandelbrot, add in points near max iteration.  These
         are the most interesting places on the mandelbrot anyway.'''
-    interesting_points = []
+    # interesting_points = []
     julia = False
 
     for step in range(mandelbrot_lifespan):
@@ -87,7 +87,10 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
             text fields from THECOLORS.  Other choices can be real ugly'''
         palette, palette_name = screen_utils.get_palette("neon")
         '''Every 20th pass, just draw a full mandelbrot set'''
-        if step % 20 == 0:
+        # if step % 20 == 0:
+        first_mandelbrot = False
+        if len(screen.interesting_points) == 0:
+            first_mandelbrot = True
             min_im = -1.2
             max_im = 1.2
             min_re = -2.5
@@ -95,11 +98,11 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
             re_factor = (max_re - min_re) / width
             im_factor = (max_im - min_im) / height
         else:
-            if julia:
-                p1 = random.randint(0, len(interesting_points) - 1)
-            min_re = interesting_points[p1][0]
+            # if julia:
+            p1 = random.randint(0, len(screen.interesting_points) - 1)
+            min_re = screen.interesting_points[p1][0]
             max_re = min_re + scale
-            min_im = interesting_points[p1][1]
+            min_im = screen.interesting_points[p1][1]
             max_im = min_im + (max_re - min_re) * height / width
             re_factor = (max_re - min_re) / (width - 1)
             im_factor = (max_im - min_im) / (height - 1)
@@ -138,11 +141,12 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
                     screen.point(x, y, current_color)
                     '''If this is the first pass (drawing the entire mandelbrot), create a list
                         of interesting points for zooming in on'''
-                    if step == 0:
+                    # if step == 0:
+                    if first_mandelbrot:
                         if n >= max_iter - 5:
                             c_re = min_re + x * re_factor
                             c_im = max_im - y * im_factor
-                            interesting_points.append((c_re, c_im))
+                            screen.interesting_points.append((c_re, c_im))
         pygame.display.flip()
         end_time = time.time()
         if verbose:
@@ -155,6 +159,8 @@ def mandelbrot(screen, mandelbrot_lifespan=20):
         pygame.display.flip()
         '''Toggles between displaying a section of the mandelbrot or showing a julia set'''
         julia = not julia
+        if first_mandelbrot:
+            first_mandelbrot = False
         max_iter += iter_step
         if max_iter <= 200:
             scale = 0.1

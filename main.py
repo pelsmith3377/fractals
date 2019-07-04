@@ -22,40 +22,46 @@ def main():
     if config.verbose:
         print(pygame.display.get_surface().get_size())
     running = True
+    fractal_favored = ["mandelbrot", "flame", "ifs", "novaretti", "lorenz", "spiro", "lines", "hopalong", "biomorph",
+                       "newton"]
+    fractal_out_of_favor = ["orbit"]
     while running:
         if config.testing:
-            orbit(screen)
+            mandelbrot(screen, 4)
         else:
-            x = random.randint(0, 10)
-            if x == 0:
-                mandelbrot(screen, 40)
-            elif x == 1:
-                flame(screen, 15)
-            elif x == 2:
+            x = random.choice(fractal_favored)
+            if x == "mandelbrot":
+                mandelbrot(screen, 4)
+            elif x == "flame":
+                flame(screen, 1)
+            elif x == "ifs":
                 ifs(screen)
-            elif x == 3:
-                # stalks(screen)
-                novaretti(screen, 5)
-            elif x == 4:
+            elif x == "orbit":
+                orbit(screen)
+            elif x == "novaretti":
+                novaretti(screen, 1)
+            elif x == "lorenz":
                 lorenz(screen)
-            elif x == 5:
-                for _ in range(5):
+            elif x == "spiro":
+                for _ in range(1):
                     spiro(screen)
-            elif x == 6:
+            elif x == "lines":
                 lines(screen)
-            elif x == 7:
-                for _ in range(3):
+            elif x == "hopalong":
+                for _ in range(1):
                     hopalong(screen)
-            elif x == 8:
+            elif x == "newton":
                 newton(screen)
-            elif x == 9:
-                for _ in range(10):
+            elif x == "biomorph":
+                for _ in range(1):
                     biomorph(screen)
+            elif x == "flame":
+                flame(screen, 1)
             else:
-                flame(screen, 5)
+                flame(screen, 1)
 
         # screen.clock.tick(1)
-
+        screen.clear()
         # kaleidoscope(screen)
 
 

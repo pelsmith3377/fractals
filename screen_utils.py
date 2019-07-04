@@ -28,6 +28,7 @@ class Window:
         pygame.display.set_caption("Fractals")  # Put a name on the window.
         self.screen_update = 50
         self.screen_update_counter = 1
+        self.interesting_points = []
 
     def point(self, x, y, color):
         self.window.set_at((x, y), color)

@@ -6,7 +6,7 @@ import screen_utils
 import config
 
 
-def lines(screen):
+def lines(screen, lines_lifespan=2000):
     verbose = config.verbose
     running = config.running
     palette, palette_name = screen_utils.get_palette()
@@ -39,7 +39,6 @@ def lines(screen):
     dir_x2 = random.randint(min_move, max_move)
     dir_y1 = random.randint(min_move, max_move)
     dir_y2 = dir_x2 + 1
-    lines_lifespan = 7000
     screen.clear()
     for lifespan in range(lines_lifespan):
         screen_utils.check_event(screen)

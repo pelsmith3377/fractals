@@ -116,7 +116,7 @@ def flame(screen, flame_lifespan=5):
             elif flame_var == "sinusoidal":
                 v += [[seed, lambda x, y: (sin(x), sin(y))], ]
             elif flame_var == "spherical":
-                v += [[seed, lambda x, y: (x / float(x * x - y * y), y / float(x * x - y * y))], ]
+                v += [[seed, lambda x, y: (x / float(x * x - y * y), y / float(x * x - y * y + 0.00001))], ]
             elif flame_var == "tangential":
                 v += [[seed, lambda x, y: (tan(x), atan(y))], ]
             elif flame_var == "swirl":
